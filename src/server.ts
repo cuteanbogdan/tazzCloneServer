@@ -3,6 +3,7 @@ import * as mongoose from "mongoose";
 import { getEnviromentVariables } from "./enviroments/enviroment";
 import UserRouter from "./routers/UserRouter";
 import * as bodyParser from "body-parser";
+import * as cors from "cors";
 
 export class Server {
   public app: express.Application = express();
@@ -14,6 +15,7 @@ export class Server {
   }
   setConfigs() {
     this.connectMongoDB();
+    this.allowCors();
     this.configureBodyParser();
   }
 
@@ -29,11 +31,17 @@ export class Server {
         extended: true,
       })
     );
+    this.app.use(bodyParser.json());
+  }
+
+  allowCors() {
+    this.app.use(cors());
   }
 
   setRoutes() {
     this.app.use("/api/user", UserRouter);
   }
+
   error404Handler() {
     this.app.use((req, res) => {
       res.status(404).json({
